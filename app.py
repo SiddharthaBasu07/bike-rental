@@ -260,7 +260,6 @@ def predict_for_hours(model, base_features, hours_range):
 # ─────────────────────────────────────────────
 #  SIDEBAR
 # ─────────────────────────────────────────────
-# In the sidebar section, replace the current radio with:
 with st.sidebar:
     st.markdown("""
     <div style="padding:28px 20px 16px;">
@@ -269,15 +268,16 @@ with st.sidebar:
             <span style="font-size:1.15rem;font-weight:800;color:#e2ecfb;letter-spacing:-0.01em;">Bike Rental</span>
             <span style="background:linear-gradient(90deg,#14b8a6,#38bdf8);color:#040810;font-size:0.58rem;font-weight:800;padding:2px 7px;border-radius:6px;letter-spacing:.06em;">AI</span>
         </div>
+        <div style="font-size:0.62rem;letter-spacing:.13em;text-transform:uppercase;color:#1e3050;padding:0 4px;margin-bottom:8px;">Navigation</div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Simplified radio without custom styling interference
-    page = st.radio(
-        "Navigation",
-        ["📊  Dashboard", "🌤  Weather Forecast", "🔮  Predict Demand", "📈  Analytics"],
-        label_visibility="collapsed"
-    )
+    page = st.radio("", [
+        "📊  Dashboard",
+        "🌤  Weather Forecast",
+        "🔮  Predict Demand",
+        "📈  Analytics"
+    ], label_visibility="collapsed")
 
     st.markdown("""
     <div style="padding:16px 20px;margin-top:20px;">
