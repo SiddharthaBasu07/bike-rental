@@ -4,6 +4,57 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+# ─────────────────────────────────────────────
+#  DATA
+# ─────────────────────────────────────────────
+hours = list(range(24))
+registered = [12,6,4,3,4,18,70,155,185,130,108,112,118,105,112,122,178,192,155,108,84,62,42,22]
+casual      = [4, 2,1,1,2, 6,12, 25, 42, 52, 58, 62, 65, 63, 60, 58, 48, 38, 28,22,16,10, 5]
+months_label = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+total_rentals= [40200,22000,52000,72000,96000,115000,138000,135000,138000,104000,72000,25000]
+avg_temp     = [4,5,9,15,19,24,27,26,21,15,9,5]
+
+C = {
+    'teal':'#14b8a6','cyan':'#38bdf8','purple':'#a78bfa',
+    'orange':'#fb923c','green':'#4ade80',
+    'grid':'rgba(255,255,255,0.04)','muted':'#3a5472','text':'#c8d6e8',
+}
+
+# ─────────────────────────────────────────────
+#  HELPER FUNCTIONS
+# ─────────────────────────────────────────────
+def normalize_temperature(temp_celsius):
+    """Convert Celsius temperature to normalized value (0-1 range)"""
+    min_temp = -5
+    max_temp = 40
+    clipped_temp = np.clip(temp_celsius, min_temp, max_temp)
+    normalized = (clipped_temp - min_temp) / (max_temp - min_temp)
+    return normalized
+
+def normalize_humidity(humidity_percent):
+    """Convert humidity percentage (0-100) to normalized value (0-1 range)"""
+    clipped_humidity = np.clip(humidity_percent, 0, 100)
+    normalized = clipped_humidity / 100.0
+    return normalized
+
+def normalize_windspeed(windspeed_kmh):
+    """Convert wind speed in km/h to normalized value (0-1 range)"""
+    min_wind = 0
+    max_wind = 50
+    clipped_wind = np.clip(windspeed_kmh, min_wind, max_wind)
+    normalized = (clipped_wind - min_wind) / (max_wind - min_wind)
+    return normalized
+
+def predict_for_hours(model, base_features, hours_range):
+    """Generate predictions for a range of hours while keeping other features constant"""
+    predictions = []
+    for hour in hours_range:
+        features = base_features.copy()
+        features[8] = hour  # hour is at index 8
+        pred_log = model.predict(features.reshape(1, -1))
+        pred = int(max(0, np.expm1(pred_log)[0]))
+        predictions.append(pred)
+    return predictions
 
 # ─────────────────────────────────────────────
 #  PAGE CONFIG
