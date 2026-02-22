@@ -58,7 +58,7 @@ html, body, [class*="css"] {
     color: #c8d6e8 !important;
 }
 [data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p { margin: 0 !important; }
-# [data-testid="stSidebar"] .stRadio [data-baseweb="radio"] > div:first-child { display: none !important; }
+ [data-testid="stSidebar"] .stRadio [data-baseweb="radio"] > div:first-child { display: none !important; }
 
 /* KPI cards */
 .kpi-card {
