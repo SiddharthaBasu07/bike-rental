@@ -81,12 +81,32 @@ html, body, [class*="css"] {
 }
 .stApp { background: #080c18 !important; }
 
+/* Main container for layout */
+.main-container {
+    display: flex;
+    width: 100%;
+}
+
 /* Custom navigation area */
+.nav-container {
+    background: linear-gradient(145deg, #0c1220, #0a0f1a);
+    border-right: 2px solid rgba(56,189,248,0.15);
+    border-radius: 0 20px 20px 0;
+    padding: 20px 15px 20px 20px;
+    margin-right: 5px;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+    min-height: calc(100vh - 40px);
+}
+
 .main-header {
     font-size: 1.65rem;
     font-weight: 800;
     color: #e2ecfb;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(56,189,248,0.2);
 }
+
 .nav-button {
     background: linear-gradient(145deg, #111827, #0f1c2e);
     border: 1px solid rgba(56,189,248,0.12);
@@ -98,15 +118,36 @@ html, body, [class*="css"] {
     transition: all 0.2s;
     width: 100%;
     text-align: left;
+    font-weight: 500;
 }
 .nav-button:hover {
     background: rgba(56,189,248,0.1);
     color: #c8d6e8;
+    border-left: 3px solid #38bdf8;
 }
 .nav-button-active {
     background: rgba(56,189,248,0.15);
     color: #38bdf8;
     border-left: 3px solid #38bdf8;
+    font-weight: 600;
+}
+
+/* Content area */
+.content-container {
+    padding: 20px 25px;
+    background: linear-gradient(145deg, #0a0f18, #080c15);
+    border-radius: 20px;
+    margin-left: 5px;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+    min-height: calc(100vh - 40px);
+}
+
+/* Vertical divider styling */
+.divider {
+    width: 1px;
+    background: linear-gradient(180deg, transparent, #38bdf8, #14b8a6, #38bdf8, transparent);
+    margin: 0 10px;
+    height: auto;
 }
 
 /* KPI cards */
@@ -216,6 +257,16 @@ label, .stSelectbox label, .stNumberInput label, .stSlider label {
     margin-top: 30px;
     margin-bottom: 20px;
 }
+
+/* Model status card */
+.model-status {
+    margin-top: 30px;
+    padding: 14px 16px;
+    background: rgba(20,184,166,0.05);
+    border: 1px solid rgba(20,184,166,0.13);
+    border-radius: 12px;
+    border-top: 2px solid #14b8a6;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -226,43 +277,45 @@ if 'page' not in st.session_state:
     st.session_state.page = "Dashboard"
 
 # ─────────────────────────────────────────────
-#  CUSTOM SIDEBAR USING COLUMNS
+#  MAIN LAYOUT WITH SEPARATION
 # ─────────────────────────────────────────────
-with st.container():
-    cols = st.columns([1, 4])
-    
-    with cols[0]:
-        st.markdown('<div class="main-header">🚲 Bike Rental AI</div>', unsafe_allow_html=True)
+# Create three columns: left nav, divider, right content
+left_col, divider_col, right_col = st.columns([1.2, 0.1, 3.7])
+
+with left_col:
+    with st.container():
+        st.markdown('<div class="nav-container">', unsafe_allow_html=True)
         
-        # Custom navigation buttons
-        nav_options = ["📊 Dashboard", "🌤 Weather", "🔮 Predict", "📈 Analytics"]
+        # Header with logo
+        st.markdown("""
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:2rem;">🚲</span>
+            <span class="main-header">Bike Rental AI</span>
+        </div>
+        """, unsafe_allow_html=True)
         
-        for option in nav_options:
-            # Extract the name without emoji for comparison
-            option_name = option.split(" ")[1] if " " in option else option
-            
+        # Navigation buttons
+        nav_options = [
+            ("📊 Dashboard", "Dashboard"),
+            ("🌤 Weather", "Weather Forecast"),
+            ("🔮 Predict", "Predict Demand"),
+            ("📈 Analytics", "Analytics")
+        ]
+        
+        for display_name, page_name in nav_options:
             # Determine if this is the active page
-            is_active = (option_name == st.session_state.page or 
-                        (option_name == "Weather" and st.session_state.page == "Weather Forecast") or
-                        (option_name == "Predict" and st.session_state.page == "Predict Demand"))
+            is_active = (page_name == st.session_state.page)
             
             # Create button with appropriate styling
             button_class = "nav-button-active" if is_active else "nav-button"
             
-            if st.button(option, key=f"nav_{option}", use_container_width=True):
-                if option == "📊 Dashboard":
-                    st.session_state.page = "Dashboard"
-                elif option == "🌤 Weather":
-                    st.session_state.page = "Weather Forecast"
-                elif option == "🔮 Predict":
-                    st.session_state.page = "Predict Demand"
-                elif option == "📈 Analytics":
-                    st.session_state.page = "Analytics"
+            if st.button(display_name, key=f"nav_{page_name}", use_container_width=True):
+                st.session_state.page = page_name
                 st.rerun()
         
-        # Model status
+        # Model status card
         st.markdown("""
-        <div style="margin-top:30px;padding:14px 16px;background:rgba(20,184,166,0.05);border:1px solid rgba(20,184,166,0.13);border-radius:12px;">
+        <div class="model-status">
             <div style="font-size:0.62rem;color:#1e3050;margin-bottom:8px;">MODEL STATUS</div>
             <div style="display:flex;align-items:center;gap:8px;">
                 <span style="width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 7px #22c55e;"></span>
@@ -271,8 +324,24 @@ with st.container():
             <div style="margin-top:8px;font-size:0.72rem;color:#1e3050;">Gradient Boosting · v1.0</div>
         </div>
         """, unsafe_allow_html=True)
-    
-    with cols[1]:
+        
+        # Version info
+        st.markdown("""
+        <div style="position:fixed;bottom:20px;font-size:0.7rem;color:#1e3050;">
+            v2.0 · 2024
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+
+with divider_col:
+    # Vertical divider
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+with right_col:
+    with st.container():
+        st.markdown('<div class="content-container">', unsafe_allow_html=True)
+        
         # ─────────────────────────────────────────────
         #  DASHBOARD PAGE
         # ─────────────────────────────────────────────
@@ -657,3 +726,5 @@ with st.container():
                         <div style="font-size:0.76rem;color:#3a5472;line-height:1.5;">{body}</div>
                     </div>
                     """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
