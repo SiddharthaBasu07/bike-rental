@@ -30,14 +30,34 @@ html, body, [class*="css"] {
 .stApp { background: #080c18 !important; }
 #MainMenu, footer, header { visibility: hidden; }
 
-/* Sidebar */
+/* Disable sidebar collapse button */
+button[data-testid="baseButton-header"] {
+    display: none !important;
+}
+section[data-testid="stSidebarCollapsedControl"] {
+    display: none !important;
+}
+.st-emotion-cache-1egp7bw {
+    display: none !important;
+}
+[data-testid="collapsedControl"] {
+    display: none !important;
+}
+
+/* Sidebar - fixed and always expanded */
 [data-testid="stSidebar"] {
     background: #0c1220 !important;
     border-right: 1px solid rgba(56,189,248,0.1) !important;
     min-width: 240px !important;
     max-width: 240px !important;
+    width: 240px !important;
+    flex-shrink: 0 !important;
+    transition: none !important;
 }
-[data-testid="stSidebar"] > div:first-child { padding: 0 !important; }
+[data-testid="stSidebar"] > div:first-child { 
+    padding: 0 !important;
+    width: 100% !important;
+}
 [data-testid="stSidebar"] .stRadio > div { gap: 0 !important; }
 [data-testid="stSidebar"] .stRadio label {
     display: flex !important;
@@ -59,6 +79,17 @@ html, body, [class*="css"] {
 }
 [data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p { margin: 0 !important; }
 [data-testid="stSidebar"] .stRadio [data-baseweb="radio"] > div:first-child { display: none !important; }
+
+/* Prevent main content from expanding when sidebar is fixed */
+.main > div {
+    width: calc(100% - 240px) !important;
+    flex: 1 1 0% !important;
+}
+.block-container {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
 
 /* KPI cards */
 .kpi-card {
