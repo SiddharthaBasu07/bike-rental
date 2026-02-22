@@ -209,6 +209,13 @@ label, .stSelectbox label, .stNumberInput label, .stSlider label {
     font-family: 'JetBrains Mono', monospace;
     line-height: 1;
 }
+
+/* Full width chart container */
+.full-width-chart {
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -488,41 +495,6 @@ with st.container():
                         </div>
                         """, unsafe_allow_html=True)
                         
-                        # Hourly prediction graph
-                        st.markdown("<br>", unsafe_allow_html=True)
-                        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-                        st.markdown(f'<div class="sec-title">Hourly Demand Forecast</div><div class="sec-sub">Predicted bike rentals throughout the day ({season_names[season]}, {weather_names[weather]})</div>', unsafe_allow_html=True)
-                        
-                        fig_hourly = go.Figure()
-                        fig_hourly.add_trace(go.Scatter(
-                            x=hours, y=all_hours_predictions,
-                            name="Predicted Demand",
-                            mode='lines+markers',
-                            line=dict(color=C['cyan'], width=4, shape='spline'),
-                            marker=dict(size=10, color=C['cyan']),
-                            hovertemplate='Hour %{x:02d}:00<br><b>%{y:,}</b> bikes<extra></extra>'
-                        ))
-                        fig_hourly.add_trace(go.Scatter(
-                            x=[hour], y=[prediction],
-                            name=f"Selected Hour ({hour:02d}:00)",
-                            mode='markers',
-                            marker=dict(size=16, color=C['orange'], line=dict(width=3, color='white')),
-                            hovertemplate='Selected: %{x:02d}:00<br><b>%{y:,}</b> bikes<extra></extra>'
-                        ))
-                        
-                        fig_hourly.update_layout(
-                            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                            font=dict(family='Plus Jakarta Sans', color=C['text'], size=12),
-                            height=500, margin=dict(l=80, r=40, t=40, b=100),
-                            xaxis=dict(tickvals=hours, ticktext=[f"{h:02d}:00" for h in hours], tickangle=-45,
-                                      gridcolor=C['grid'], color=C['muted'], title="Hour of Day"),
-                            yaxis=dict(gridcolor=C['grid'], color=C['muted'], title="Predicted Rentals (bikes per hour)"),
-                            showlegend=True,
-                            legend=dict(bgcolor='rgba(0,0,0,0)', orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5)
-                        )
-                        st.plotly_chart(fig_hourly, use_container_width=True, config={'displayModeBar':False})
-                        st.markdown('</div>', unsafe_allow_html=True)
-                        
                     except FileNotFoundError:
                         st.markdown("""
                         <div class="result-card" style="opacity:0.7;">
@@ -546,6 +518,84 @@ with st.container():
                         <div style="color:#3a5472;font-size:0.88rem;">Fill in the conditions<br>and click Predict</div>
                     </div>
                     """, unsafe_allow_html=True)
+            
+            # ─────────────────────────────────────────────
+            #  HOURLY PREDICTION GRAPH - LARGE AND AT BOTTOM
+            # ─────────────────────────────────────────────
+            if predict_btn and 'all_hours_predictions' in locals() and 'prediction' in locals():
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown('<div class="full-width-chart">', unsafe_allow_html=True)
+                st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+                st.markdown(f'<div class="sec-title">Hourly Demand Forecast</div><div class="sec-sub">Predicted bike rentals throughout the day ({season_names[season]}, {weather_names[weather]})</div>', unsafe_allow_html=True)
+                
+                fig_hourly = go.Figure()
+                
+                # Add the prediction line
+                fig_hourly.add_trace(go.Scatter(
+                    x=hours, 
+                    y=all_hours_predictions,
+                    name="Predicted Demand",
+                    mode='lines+markers',
+                    line=dict(color=C['cyan'], width=4, shape='spline'),
+                    marker=dict(size=10, color=C['cyan']),
+                    hovertemplate='Hour %{x:02d}:00<br><b>%{y:,}</b> bikes<extra></extra>'
+                ))
+                
+                # Add a marker for the selected hour
+                fig_hourly.add_trace(go.Scatter(
+                    x=[hour],
+                    y=[prediction],
+                    name=f"Selected Hour ({hour:02d}:00)",
+                    mode='markers',
+                    marker=dict(size=20, color=C['orange'], line=dict(width=3, color='white')),
+                    hovertemplate='Selected: %{x:02d}:00<br><b>%{y:,}</b> bikes<extra></extra>'
+                ))
+                
+                # Update layout for very large graph
+                fig_hourly.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)', 
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(family='Plus Jakarta Sans', color=C['text'], size=14),
+                    height=700,  # Much larger height
+                    margin=dict(l=100, r=60, t=60, b=120),  # Increased margins
+                    xaxis=dict(
+                        tickvals=hours, 
+                        ticktext=[f"{h:02d}:00" for h in hours], 
+                        tickangle=-45,
+                        gridcolor=C['grid'], 
+                        color=C['muted'], 
+                        title="Hour of Day",
+                        title_font=dict(size=16),
+                        tickfont=dict(size=12)
+                    ),
+                    yaxis=dict(
+                        gridcolor=C['grid'], 
+                        color=C['muted'], 
+                        title="Predicted Rentals (bikes per hour)",
+                        title_font=dict(size=16),
+                        tickfont=dict(size=12)
+                    ),
+                    showlegend=True,
+                    legend=dict(
+                        bgcolor='rgba(0,0,0,0)', 
+                        orientation='h', 
+                        yanchor='bottom', 
+                        y=1.02, 
+                        xanchor='center', 
+                        x=0.5,
+                        font=dict(size=14)
+                    ),
+                    hovermode='x unified',
+                    hoverlabel=dict(
+                        bgcolor='#1a2840', 
+                        bordercolor='rgba(56,189,248,0.3)',
+                        font=dict(family='Plus Jakarta Sans', color='#e2ecfb', size=14)
+                    )
+                )
+                
+                st.plotly_chart(fig_hourly, use_container_width=True, config={'displayModeBar':False})
+                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
         # ─────────────────────────────────────────────
         #  ANALYTICS PAGE
