@@ -160,8 +160,16 @@ label, .stSelectbox label, .stNumberInput label, .stSlider label {
     font-family: 'JetBrains Mono', monospace;
     line-height: 1;
 }
+/* ADD THIS NEW SECTION TO FORCE SIDEBAR VISIBILITY */
+[data-testid="stSidebar"] {
+    display: block !important;
+    visibility: visible !important;
+    width: 240px !important;
+    background: #0c1220 !important;
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # ─────────────────────────────────────────────
